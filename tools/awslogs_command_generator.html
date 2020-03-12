@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>awslogs command generator</title>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.8.22/dayjs.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <v-app>
+        <v-content>
+          <v-container fluid>
+            <v-row>
+              <v-col cols="12">
+                <h1>awslogs command GUI generator</h1>
+                <v-form>
+                  <v-row>
+                    <v-col cols="12" sm="4" md="2">
+                      <v-text-field
+                        v-model="awsAccessKeyId"
+                        label="aws-access-key-id"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4" md="2">
+                      <v-text-field
+                        v-model="awsSecretAccessKey"
+                        label="aws-secret-access-key"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4" md="2">
+                      <v-text-field
+                        v-model="awsSessionToken"
+                        label="aws-session-token"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4" md="2">
+                      <v-text-field
+                        v-model="profile"
+                        label="profile"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4" md="2">
+                      <v-text-field
+                        v-model="awsRegion"
+                        label="aws-region"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="filter"
+                        label="filter"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="6" sm="2">
+                      <v-switch
+                        v-model="watch"
+                        label="watch"
+                        hide-details
+                      ></v-switch>
+                    </v-col>
+                    <v-col cols="6" sm="2">
+                      <v-text-field
+                        type="number"
+                        v-model.number="watchInterval"
+                        label="watch-interval"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="6" sm="2">
+                      <v-switch
+                        v-model="noGroup"
+                        label="noGroup"
+                        hide-details
+                      ></v-switch>
+                    </v-col>
+                    <v-col cols="6" sm="2">
+                      <v-switch
+                        v-model="noStream"
+                        label="noStream"
+                        hide-details
+                      ></v-switch>
+                    </v-col>
+                    <v-col cols="6" sm="2">
+                      <v-switch
+                        v-model="timestamp"
+                        label="timestamp"
+                        hide-details
+                      ></v-switch>
+                    </v-col>
+                    <v-col cols="6" sm="2">
+                      <v-switch
+                        v-model="ingestionTime"
+                        label="ingestionTime"
+                        hide-details
+                      ></v-switch>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-row>
+                        <v-col cols="6" sm="3">
+                          <v-text-field
+                            type="date"
+                            v-model="startDate"
+                            label="start(date)"
+                            hide-details
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="6" sm="3">
+                          <v-text-field
+                            type="time"
+                            v-model="startTime"
+                            label="start(time)"
+                            hide-details
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="6" sm="3">
+                          <v-text-field
+                            type="date"
+                            v-model="endDate"
+                            label="end(date)"
+                            hide-details
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="6" sm="3">
+                          <v-text-field
+                            type="time"
+                            v-model="endTime"
+                            label="end(time)"
+                            hide-details
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                    <v-col cols="3">
+                      <v-radio-group v-model="color" hide-details>
+                        <v-radio label="auto(default)" value="auto"></v-radio>
+                        <v-radio label="never" value="never"></v-radio>
+                        <v-radio label="always" value="always"></v-radio>
+                      </v-radio-group>
+                    </v-col>
+                    <v-col cols="9">
+                      <v-text-field
+                        v-model="query"
+                        label="query"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="3">
+                      <v-text-field
+                        v-model="logGroupName"
+                        label="log-group-name"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="3">
+                      <v-text-field
+                        v-model="logStreamName"
+                        label="log-stream-name"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-form>
+
+                <hr class="my-5" />
+              </v-col>
+
+              <v-col cols="12">
+                <v-row>
+                  <v-col cols="11">
+                    <code class="pa-3">{{ awslogsCommand }}</code>
+                  </v-col>
+
+                  <v-col cols="1">
+                    <v-btn @click="handleContentCopyButton" class="mx-2">
+                      <v-icon>
+                        mdi-content-copy
+                      </v-icon>
+                    </v-btn>
+
+                    <v-snackbar v-model="snackbar" timeout="3000">
+                      Copied!!
+                    </v-snackbar>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-content>
+      </v-app>
+    </div>
+
+    <script>
+      new Vue({
+        el: "#app",
+        vuetify: new Vuetify(),
+        data() {
+          const defaultStart = dayjs().subtract(1, "hour");
+          const defaultEnd = dayjs();
+
+          return {
+            awsAccessKeyId: "",
+            awsSecretAccessKey: "",
+            awsSessionToken: "",
+            profile: "",
+            awsRegion: "",
+            filter: "",
+            watch: false,
+            watchInterval: null,
+            noGroup: false,
+            noStream: false,
+            timestamp: false,
+            ingestionTime: false,
+            startDate: defaultStart.format("YYYY-MM-DD"),
+            startTime: defaultStart.format("HH:mm"),
+            endDate: defaultEnd.format("YYYY-MM-DD"),
+            endTime: defaultEnd.format("HH:mm"),
+            color: "auto",
+            query: "",
+            logGroupName: "",
+            logStreamName: "",
+            snackbar: false
+          };
+        },
+        computed: {
+          startDateTime() {
+            if (this.startDate.length > 0 && this.startTime.length > 0) {
+              return dayjs(this.startDate + " " + this.startTime);
+            } else {
+              return null;
+            }
+          },
+          endDateTime() {
+            if (this.endDate.length > 0 && this.endTime.length > 0) {
+              return dayjs(this.endDate + " " + this.endTime);
+            } else {
+              return null;
+            }
+          },
+          awslogsCommand() {
+            let commands = ["awslogs", "get"];
+            if (this.awsAccessKeyId.length > 0) {
+              commands.push("--aws-access-key-id");
+              commands.push(this.awsAccessKeyId);
+            }
+            if (this.awsSecretAccessKey.length > 0) {
+              commands.push("--aws-secret-access-key");
+              commands.push(this.awsSecretAccessKey);
+            }
+            if (this.awsSessionToken.length > 0) {
+              commands.push("--aws-session-token");
+              commands.push(this.awsSessionToken);
+            }
+            if (this.profile.length > 0) {
+              commands.push("--profile");
+              commands.push(this.profile);
+            }
+            if (this.awsRegion.length > 0) {
+              commands.push("--aws-region");
+              commands.push(this.awsRegion);
+            }
+            if (this.filter.length > 0) {
+              commands.push("-f");
+              commands.push("'" + this.filter + "'");
+            }
+            if (this.watch) {
+              commands.push("-w");
+              if (this.watchInterval > 0) {
+                commands.push("-i");
+                commands.push(this.watchInterval);
+              }
+            }
+            if (this.noGroup) {
+              commands.push("-G");
+            }
+            if (this.noStream) {
+              commands.push("-S");
+            }
+            if (this.timestamp) {
+              commands.push("--timestamp");
+            }
+            if (this.ingestionTime) {
+              commands.push("--ingestion-time");
+            }
+            if (this.startDateTime) {
+              commands.push("-s");
+              const dateTimeStr = this.startDateTime.format(
+                "YYYY-MM-DD HH:mm:ssZ"
+              );
+              commands.push(dateTimeStr);
+            }
+            if (this.endDateTime) {
+              commands.push("-e");
+              const dateTimeStr = this.endDateTime.format(
+                "YYYY-MM-DD HH:mm:ssZ"
+              );
+              commands.push(dateTimeStr);
+            }
+            if (this.color !== "auto") {
+              commands.push("--color");
+              commands.push(this.color);
+            }
+            if (this.query.length > 0) {
+              commands.push("-q");
+              commands.push("'" + this.query + "'");
+            }
+
+            commands.push(this.logGroupName);
+            commands.push(this.logStreamName);
+            return commands.join(" ");
+          }
+        },
+        methods: {
+          handleContentCopyButton() {
+            this.copyToClipboard(this.awslogsCommand);
+
+            this.snackbar = true;
+          },
+          copyToClipboard(str) {
+            const listener = e => {
+              e.clipboardData.setData("text/plain", str);
+              e.preventDefault();
+              document.removeEventListener("copy", listener);
+            };
+            document.addEventListener("copy", listener);
+            document.execCommand("copy");
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
