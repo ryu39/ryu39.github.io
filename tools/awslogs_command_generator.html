@@ -19,6 +19,12 @@
       href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css"
       rel="stylesheet"
     />
+    <style>
+      .reset-link {
+        color: rgba(0, 0, 0, 0.87) !important;
+        text-decoration: none;
+      }
+    </style>
 
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
@@ -32,7 +38,19 @@
             <v-row>
               <v-col cols="12">
                 <h1>awslogs command GUI generator</h1>
+
+                <p>
+                  Genarate
+                  <a
+                    href="https://github.com/jorgebastida/awslogs"
+                    target="_blank"
+                    >awslogs</a
+                  >
+                  command by GUI.
+                </p>
+
                 <v-form>
+                  <h2>Preference</h2>
                   <v-row>
                     <v-col cols="12" sm="4" md="2">
                       <v-text-field
@@ -69,13 +87,16 @@
                         hide-details
                       ></v-text-field>
                     </v-col>
-                    <v-col cols="12">
-                      <v-text-field
-                        v-model="filter"
-                        label="filter"
-                        hide-details
-                      ></v-text-field>
+                    <v-col cols="12" sm="4" md="2">
+                      color
+                      <v-radio-group v-model="color" hide-details>
+                        <v-radio label="auto(default)" value="auto"></v-radio>
+                        <v-radio label="never" value="never"></v-radio>
+                        <v-radio label="always" value="always"></v-radio>
+                      </v-radio-group>
                     </v-col>
+                  </v-row>
+                  <v-row>
                     <v-col cols="6" sm="2">
                       <v-switch
                         v-model="watch"
@@ -119,6 +140,17 @@
                         hide-details
                       ></v-switch>
                     </v-col>
+                  </v-row>
+
+                  <h2>Query</h2>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="filter"
+                        label="filter"
+                        hide-details
+                      ></v-text-field>
+                    </v-col>
                     <v-col cols="12">
                       <v-row>
                         <v-col cols="6" sm="3">
@@ -155,14 +187,7 @@
                         </v-col>
                       </v-row>
                     </v-col>
-                    <v-col cols="3">
-                      <v-radio-group v-model="color" hide-details>
-                        <v-radio label="auto(default)" value="auto"></v-radio>
-                        <v-radio label="never" value="never"></v-radio>
-                        <v-radio label="always" value="always"></v-radio>
-                      </v-radio-group>
-                    </v-col>
-                    <v-col cols="9">
+                    <v-col cols="12">
                       <v-text-field
                         v-model="query"
                         label="query"
@@ -185,11 +210,11 @@
                     </v-col>
                   </v-row>
                 </v-form>
-
-                <hr class="my-5" />
               </v-col>
 
               <v-col cols="12">
+                <h2>Command</h2>
+
                 <v-row>
                   <v-col cols="11">
                     <code class="pa-3">{{ awslogsCommand }}</code>
@@ -211,6 +236,17 @@
             </v-row>
           </v-container>
         </v-content>
+
+        <v-footer app fixed inset padless>
+          <v-col class="text-center pa-0" cols="12">
+            <span
+              >&copy; 2020
+              <a href="https://ryu39.github.io/" class="reset-link"
+                >ryu39</a
+              ></span
+            >
+          </v-col>
+        </v-footer>
       </v-app>
     </div>
 
@@ -309,14 +345,14 @@
             if (this.startDateTime) {
               commands.push("-s");
               const dateTimeStr = this.startDateTime.format(
-                "YYYY-MM-DD HH:mm:ssZ"
+                "'YYYY-MM-DD HH:mm:ssZ'"
               );
               commands.push(dateTimeStr);
             }
             if (this.endDateTime) {
               commands.push("-e");
               const dateTimeStr = this.endDateTime.format(
-                "YYYY-MM-DD HH:mm:ssZ"
+                "'YYYY-MM-DD HH:mm:ssZ'"
               );
               commands.push(dateTimeStr);
             }
