@@ -209,6 +209,19 @@
                       ></v-text-field>
                     </v-col>
                   </v-row>
+
+                  <h2>From Cloudwatch URL</h2>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="cloudwatchUrl"
+                        label="AWS Cloudwatch URL"
+                        hide-details
+                        clearable
+                        @input="onInputCloudwatchUrl"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
                 </v-form>
               </v-col>
 
@@ -279,6 +292,7 @@
             query: "",
             logGroupName: "",
             logStreamName: "",
+            cloudwatchUrl: "",
             snackbar: false
           };
         },
@@ -375,6 +389,53 @@
             this.copyToClipboard(this.awslogsCommand);
 
             this.snackbar = true;
+          },
+          onInputCloudwatchUrl(val) {
+            try {
+              const url = new URL(val);
+              if (url.searchParams.get("region")) {
+                this.awsRegion = url.searchParams.get("region");
+              }
+              if (/^#logEventViewer:.*$/.test(url.hash)) {
+                url.hash
+                  .replace(/^#logEventViewer:/, "")
+                  .split(";")
+                  .map(v => v.split("="))
+                  .forEach(v => {
+                    key = v[0];
+                    value = v[1];
+                    let datetime;
+                    switch (key) {
+                      case "group":
+                        this.logGroupName = value;
+                        break;
+                      case "stream":
+                        this.logStreamName = value;
+                        break;
+                      case "filter":
+                        this.filter = value;
+                        break;
+                      case "start":
+                        datetime = dayjs(value);
+                        this.startDate = datetime.format("YYYY-MM-DD");
+                        this.startTime = datetime.format("HH:mm");
+                        break;
+                      case "end":
+                        datetime = dayjs(value);
+                        this.endDate = datetime.format("YYYY-MM-DD");
+                        this.endTime = datetime.format("HH:mm");
+                        break;
+                    }
+                  });
+              }
+            } catch (e) {
+              // If val is not URL format, then TypeError is occured.
+              if (e instanceof TypeError) {
+                // Do nothing
+              } else {
+                throw e;
+              }
+            }
           },
           copyToClipboard(str) {
             const listener = e => {
